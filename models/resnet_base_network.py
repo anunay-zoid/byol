@@ -16,5 +16,6 @@ class ResNet18(torch.nn.Module):
 
     def forward(self, x):
         h = self.encoder(x)
+        # print(h.shape)
         h = h.view(h.shape[0], h.shape[1])
         return self.projetion(h)

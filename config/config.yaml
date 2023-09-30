@@ -1,26 +1,26 @@
 network:
-  name: resnet18
+  name: resnet50
 
   # Specify a folder containing a pre-trained model to fine-tune. If training from scratch, pass None.
-  fine_tune_from: 'resnet-18_40-epochs'
+  fine_tune_from: 'resnet-50_40-epochs'
 
   projection_head:
-    mlp_hidden_size: 512
-    projection_size: 128
+    mlp_hidden_size: 4096
+    projection_size: 512
 
 data_transforms:
   s: 1
-  input_shape: (96,96,3)
+  input_shape: (256,256,3)
 
 trainer:
-  batch_size: 64
+  batch_size: 16
   m: 0.996 # momentum update
   checkpoint_interval: 5000
-  max_epochs: 40
+  max_epochs: 200
   num_workers: 4
 
 optimizer:
   params:
-    lr: 0.03
+    lr: 0.05
     momentum: 0.9
     weight_decay: 0.0004

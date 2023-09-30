@@ -6,6 +6,7 @@ from torch.utils.data.dataloader import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
 from utils import _create_model_training_folder
+from tqdm import tqdm
 
 
 class BYOLTrainer:
@@ -53,9 +54,9 @@ class BYOLTrainer:
 
         self.initializes_target_network()
 
-        for epoch_counter in range(self.max_epochs):
-
-            for (batch_view_1, batch_view_2), _ in train_loader:
+        for epoch_counter in tqdm(range(self.max_epochs)):
+            print("epoch {}".format(epoch_counter))
+            for (batch_view_1, batch_view_2)in train_loader:
 
                 batch_view_1 = batch_view_1.to(self.device)
                 batch_view_2 = batch_view_2.to(self.device)
@@ -77,7 +78,7 @@ class BYOLTrainer:
                 self._update_target_network_parameters()  # update the key encoder
                 niter += 1
 
-            print("End of epoch {}".format(epoch_counter))
+            
 
         # save checkpoints
         self.save_model(os.path.join(model_checkpoints_folder, 'model.pth'))
@@ -102,4 +103,5 @@ class BYOLTrainer:
             'online_network_state_dict': self.online_network.state_dict(),
             'target_network_state_dict': self.target_network.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict(),
+            'predictor_state_dict' : self.predictor.state_dict(),
         }, PATH)
