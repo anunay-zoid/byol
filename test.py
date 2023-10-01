@@ -28,7 +28,7 @@ def image_to_tensor(img_path):
 
         return transform(img)
 
-PATH = "/home/zoid/PyTorch-BYOL/runs/Sep30_17-22-36_zoid-B560M-H-V2/checkpoints/model.pth"
+PATH = "/home/anunay/Documents/byol/runs/Sep30_22-49-35_anunay-Legion-5-Pro-16ACH6H/checkpoints/bitches/model90.pth"
 checkpoint = torch.load(PATH)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -39,7 +39,7 @@ online_network.load_state_dict(state_dict=checkpoint["online_network_state_dict"
 
 predictor = MLPHead(in_channels=online_network.projetion.net[-1].out_features,
                         **config['network']['projection_head']).to(device)
-# predictor.load_state_dict(checkpoint["predictor_state_dict"])
+predictor.load_state_dict(checkpoint["predictor_state_dict"])
 
 target_network = ResNet18(**config['network']).to(device)
 target_network.load_state_dict(state_dict=checkpoint["target_network_state_dict"])
@@ -47,15 +47,30 @@ target_network.load_state_dict(state_dict=checkpoint["target_network_state_dict"
 # x = torch.randn(1,3,256,256).to(device)
 # y = torch.randn(1,3,256,256).to(device)
 
-IMG_PATH1 = "/home/zoid/Documents/Eresh/StrongSORT-YOLO/crop_pad/5.jpg"
-IMG_PATH2 = "/home/zoid/Documents/Eresh/StrongSORT-YOLO/crop_pad/57.jpg"
+IMG_PATH1 = "/home/anunay/Documents/crop_pad/5.jpg"
+IMG_PATH2 = "/home/anunay/Documents/crop_pad/660.jpg"
+IMG_PATH3 = "/home/anunay/Documents/crop_pad/6.jpg"
 
-x = torch.unsqueeze(image_to_tensor(IMG_PATH1).to(device),0)
-y = torch.unsqueeze(image_to_tensor(IMG_PATH2).to(device),0)
-predictions_from_view_1 = predictor(online_network(x))
-targets_to_view_1 = target_network(y)
+x = image_to_tensor(IMG_PATH1).to(device)
+y = image_to_tensor(IMG_PATH2).to(device)
+z = image_to_tensor(IMG_PATH3).to(device)
+# predictions_from_view_1 = predictor(online_network(torch.stack([x,z])))
+# targets_to_view_1 = target_network(torch.stack([z,x]))
 
-print(predictions_from_view_1,targets_to_view_1)
+batch_view_1 = torch.stack([x,y])
+batch_view_2 = torch.stack([y,x])
 
-print(regression_loss(predictions_from_view_1 , targets_to_view_1))
-print(targets_to_view_1.shape , predictions_from_view_1.shape)
+predictions_from_view_1 = predictor(online_network(batch_view_1))
+predictions_from_view_2 = predictor(online_network(batch_view_2))
+
+targets_to_view_2 = target_network(batch_view_2)
+targets_to_view_1 = target_network(batch_view_1)
+
+loss1 = regression_loss(predictions_from_view_1 , targets_to_view_1)
+loss2 = regression_loss(predictions_from_view_2 , targets_to_view_2)
+
+print("loss1 = " , loss1)
+print("loss2 = " , loss2)
+
+loss = (loss1 + loss2)/2
+print("final loss = " , loss)

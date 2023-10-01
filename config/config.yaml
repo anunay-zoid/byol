@@ -16,11 +16,11 @@ trainer:
   batch_size: 16
   m: 0.996 # momentum update
   checkpoint_interval: 5000
-  max_epochs: 200
+  max_epochs: 130
   num_workers: 4
 
 optimizer:
   params:
-    lr: 0.05
+    lr: 0.005
     momentum: 0.9
     weight_decay: 0.0004

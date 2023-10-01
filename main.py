@@ -70,7 +70,7 @@ def main():
     # train_dataset = datasets.STL10('/home/thalles/Downloads/', split='train+unlabeled', download=True,
                                 #    transform=MultiViewDataInjector([data_transform, data_transform]))
 
-    train_dataset = ImagesDataset("/home/zoid/Documents/Eresh/StrongSORT-YOLO/crop_pad" , 256)
+    train_dataset = ImagesDataset("/home/anunay/Documents/crop_pad" , 256)
 
     # online network
     online_network = ResNet18(**config['network']).to(device)

@@ -7,9 +7,10 @@ class MLPHead(nn.Module):
 
         self.net = nn.Sequential(
             nn.Linear(in_channels, mlp_hidden_size),
-            # nn.BatchNorm1d(mlp_hidden_size),
+            nn.BatchNorm1d(mlp_hidden_size),
             nn.ReLU(inplace=True),
-            nn.Linear(mlp_hidden_size, projection_size)
+            nn.Linear(mlp_hidden_size, projection_size),
+            nn.Linear(projection_size,projection_size)
         )
 
     def forward(self, x):

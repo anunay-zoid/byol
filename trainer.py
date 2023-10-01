@@ -22,6 +22,7 @@ class BYOLTrainer:
         self.batch_size = params['batch_size']
         self.num_workers = params['num_workers']
         self.checkpoint_interval = params['checkpoint_interval']
+        self.pathSaveForModel = "runs/Sep30_22-49-35_anunay-Legion-5-Pro-16ACH6H/checkpoints/bitches"
         _create_model_training_folder(self.writer, files_to_same=["./config/config.yaml", "main.py", 'trainer.py'])
 
     @torch.no_grad()
@@ -55,7 +56,7 @@ class BYOLTrainer:
         self.initializes_target_network()
 
         for epoch_counter in tqdm(range(self.max_epochs)):
-            print("epoch {}".format(epoch_counter))
+            # print("epoch {}".format(epoch_counter))
             for (batch_view_1, batch_view_2)in train_loader:
 
                 batch_view_1 = batch_view_1.to(self.device)
@@ -80,8 +81,12 @@ class BYOLTrainer:
 
             
 
-        # save checkpoints
+             # save checkpoints
+            if(epoch_counter%10==0):
+                self.save_model(self.pathSaveForModel + "/model_" + str(epoch_counter) + ".pth")#os.path.join(model_checkpoints_folder, 'model' + str(epoch_counter) + '.pth'))
+        
         self.save_model(os.path.join(model_checkpoints_folder, 'model.pth'))
+
 
     def update(self, batch_view_1, batch_view_2):
         # compute query feature
